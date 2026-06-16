@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "LifeGamer",
+    "slug": "life-gamer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "scheme": "lifegamer",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.lifegamer.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#6C63FF"
+      },
+      "package": "com.lifegamer.app"
+    },
+    "plugins": ["expo-router"]
+  }
+}
