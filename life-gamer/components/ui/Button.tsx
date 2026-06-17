@@ -32,24 +32,24 @@ export default function Button({
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
   const backgroundColor = (() => {
-    if (disabled) return theme.border;
+    if (disabled) return theme.surfaceElevated;
     switch (variant) {
       case 'primary': return theme.primary;
-      case 'secondary': return theme.surface;
+      case 'secondary': return theme.surfaceElevated;
       case 'ghost': return 'transparent';
     }
   })();
 
   const textColor = (() => {
-    if (disabled) return theme.textSecondary;
+    if (disabled) return theme.textMuted;
     switch (variant) {
-      case 'primary': return '#FFFFFF';
+      case 'primary': return '#0A0A0F';
       case 'secondary': return theme.text;
       case 'ghost': return theme.primary;
     }
   })();
 
-  const paddingVertical = size === 'small' ? 8 : size === 'medium' ? 12 : 16;
+  const paddingVertical = size === 'small' ? 10 : size === 'medium' ? 14 : 18;
   const fontSize = size === 'small' ? 14 : size === 'medium' ? 16 : 18;
 
   return (
@@ -63,6 +63,13 @@ export default function Button({
           paddingVertical,
           borderWidth: variant === 'secondary' ? 1 : 0,
           borderColor: theme.border,
+        },
+        variant === 'primary' && !disabled && {
+          shadowColor: theme.primary,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 12,
+          elevation: 6,
         },
         style,
       ]}
@@ -79,13 +86,14 @@ export default function Button({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
   },
   text: {
     fontWeight: '600',
+    letterSpacing: 0.3,
   },
 });

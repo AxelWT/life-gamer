@@ -73,7 +73,7 @@ export default function MoodCalendar({
       <View style={styles.weekdayRow}>
         {WEEKDAYS.map((day) => (
           <View key={day} style={styles.weekdayCell}>
-            <Text style={[styles.weekdayText, { color: theme.textSecondary }]}>{day}</Text>
+            <Text style={[styles.weekdayText, { color: theme.textMuted }]}>{day}</Text>
           </View>
         ))}
       </View>
@@ -95,8 +95,9 @@ export default function MoodCalendar({
               style={[
                 styles.dayCell,
                 { width: DAY_WIDTH },
-                {
-                  backgroundColor: moodDef ? moodDef.color + '20' : 'transparent',
+                moodDef && {
+                  backgroundColor: moodDef.color + '18',
+                  borderRadius: 10,
                 },
               ]}
             >
@@ -127,11 +128,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 12,
+    paddingBottom: 14,
     borderBottomWidth: 1,
   },
   arrowBtn: {
-    padding: 8,
+    padding: 10,
   },
   arrow: {
     fontSize: 16,
@@ -139,6 +140,7 @@ const styles = StyleSheet.create({
   monthLabel: {
     fontSize: 18,
     fontWeight: '700',
+    letterSpacing: 0.5,
   },
   weekdayRow: {
     flexDirection: 'row',
@@ -146,11 +148,12 @@ const styles = StyleSheet.create({
   weekdayCell: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 10,
   },
   weekdayText: {
     fontSize: 13,
     fontWeight: '500',
+    letterSpacing: 0.5,
   },
   daysGrid: {
     flexDirection: 'row',
@@ -160,7 +163,6 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
   },
   dayText: {
     fontSize: 15,

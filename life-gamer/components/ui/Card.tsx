@@ -5,9 +5,10 @@ import { Colors } from '../../constants/colors';
 interface CardProps {
   children: React.ReactNode;
   style?: ViewStyle;
+  glowing?: boolean;
 }
 
-export default function Card({ children, style }: CardProps) {
+export default function Card({ children, style, glowing }: CardProps) {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
@@ -19,6 +20,14 @@ export default function Card({ children, style }: CardProps) {
           backgroundColor: theme.surface,
           borderColor: theme.border,
         },
+        glowing && {
+          borderColor: theme.primary,
+          shadowColor: theme.primary,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.3,
+          shadowRadius: 16,
+          elevation: 8,
+        },
         style,
       ]}
     >
@@ -29,8 +38,8 @@ export default function Card({ children, style }: CardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 20,
+    padding: 20,
     borderWidth: 1,
   },
 });

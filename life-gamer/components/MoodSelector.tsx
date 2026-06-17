@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, useColorScheme } from 'react-native';
-import { MoodType } from '../../types';
-import { MOODS } from '../../constants/moods';
-import { Colors } from '../../constants/colors';
+import { MoodType } from '../types';
+import { MOODS } from '../constants/moods';
+import { Colors } from '../constants/colors';
 
 interface MoodSelectorProps {
   selected: MoodType | null;
@@ -26,8 +26,15 @@ export default function MoodSelector({ selected, onSelect }: MoodSelectorProps) 
               style={[
                 styles.moodOption,
                 {
-                  backgroundColor: isSelected ? mood.color + '20' : theme.background,
+                  backgroundColor: isSelected ? mood.color + '18' : theme.surfaceElevated,
                   borderColor: isSelected ? mood.color : theme.border,
+                },
+                isSelected && {
+                  shadowColor: mood.color,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 10,
+                  elevation: 4,
                 },
               ]}
             >
@@ -45,11 +52,12 @@ export default function MoodSelector({ selected, onSelect }: MoodSelectorProps) 
 
 const styles = StyleSheet.create({
   container: {
-    gap: 12,
+    gap: 14,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
+    letterSpacing: 0.3,
   },
   moodRow: {
     flexDirection: 'row',
@@ -57,17 +65,19 @@ const styles = StyleSheet.create({
   },
   moodOption: {
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 2,
-    paddingHorizontal: 8,
-    paddingVertical: 10,
-    minWidth: 58,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    minWidth: 60,
   },
   emoji: {
-    fontSize: 24,
+    fontSize: 26,
   },
   moodLabel: {
     fontSize: 12,
-    marginTop: 4,
+    marginTop: 6,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
 });

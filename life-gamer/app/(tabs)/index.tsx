@@ -41,34 +41,59 @@ export default function HomeScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.content}
     >
-      <Text style={[styles.greeting, { color: theme.text }]}>{greeting} 👋</Text>
+      {/* Header Badge */}
+      <View style={[styles.badge, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+        <View style={[styles.badgeDot, { backgroundColor: theme.primary }]} />
+        <Text style={[styles.badgeText, { color: theme.primary }]}>LifeGamer · 生活游戏化</Text>
+      </View>
 
+      {/* Greeting */}
+      <Text style={[styles.greeting, { color: theme.text }]}>{greeting} 👋</Text>
+      <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
+        记录生活，升级人生
+      </Text>
+
+      {/* Level Card */}
       {profile && (
-        <Card style={styles.levelCard}>
+        <Card glowing style={styles.levelCard}>
           <View style={styles.levelHeader}>
-            <Text style={[styles.levelTitle, { color: theme.text }]}>
-              Lv.{profile.level} {profile.title}
-            </Text>
-            <Text style={[styles.streak, { color: theme.primary }]}>
-              🔥 {profile.streakDays}天
-            </Text>
+            <View style={styles.levelLeft}>
+              <Text style={[styles.levelValue, { color: theme.primary }]}>
+                Lv.{profile.level}
+              </Text>
+              <Text style={[styles.levelTitle, { color: theme.text }]}>
+                {profile.title}
+              </Text>
+            </View>
+            <View style={[styles.streakBadge, { backgroundColor: theme.primaryGlow }]}>
+              <Text style={[styles.streak, { color: theme.primary }]}>
+                🔥 {profile.streakDays}天
+              </Text>
+            </View>
           </View>
-          <View style={[styles.progressBarBg, { backgroundColor: theme.border }]}>
+          <View style={[styles.progressBarBg, { backgroundColor: theme.surfaceElevated }]}>
             <View
               style={[styles.progressBar, { backgroundColor: theme.primary, width: `${expProgress * 100}%` }]}
             />
           </View>
-          <Text style={[styles.expText, { color: theme.textSecondary }]}>
-            {profile.exp} / {profile.expToNextLevel} EXP
-          </Text>
+          <View style={styles.expRow}>
+            <Text style={[styles.expLabel, { color: theme.textMuted }]}>经验值</Text>
+            <Text style={[styles.expText, { color: theme.textSecondary }]}>
+              {profile.exp} / {profile.expToNextLevel}
+            </Text>
+          </View>
         </Card>
       )}
 
+      {/* Today Section */}
       <View style={styles.section}>
+        <Text style={[styles.sectionTag, { color: theme.accent }]}>TODAY</Text>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>今日记录</Text>
         {todayDiary ? (
           <Card>
-            <Text style={[styles.completedText, { color: theme.primary }]}>✅ 今日已记录</Text>
+            <View style={styles.completedRow}>
+              <Text style={[styles.completedText, { color: theme.primary }]}>✅ 今日已记录</Text>
+            </View>
           </Card>
         ) : (
           <Button
@@ -78,7 +103,9 @@ export default function HomeScreen() {
         )}
       </View>
 
+      {/* Recent Section */}
       <View style={styles.section}>
+        <Text style={[styles.sectionTag, { color: theme.accent }]}>RECENT</Text>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>最近记录</Text>
         {recentDiaries.length === 0 ? (
           <Card>
@@ -107,28 +134,68 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 20,
-    gap: 20,
+    padding: 24,
+    gap: 24,
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 100,
+    borderWidth: 1,
+  },
+  badgeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  badgeText: {
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   greeting: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: '800',
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    fontSize: 16,
+    marginTop: -12,
+    letterSpacing: 0.3,
   },
   levelCard: {
-    gap: 10,
+    gap: 14,
   },
   levelHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  levelLeft: {
+    gap: 4,
+  },
+  levelValue: {
+    fontSize: 36,
+    fontWeight: '800',
+    letterSpacing: -1,
+  },
   levelTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  streakBadge: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 12,
   },
   streak: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
   },
   progressBarBg: {
     height: 8,
@@ -139,15 +206,34 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 4,
   },
+  expRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  expLabel: {
+    fontSize: 12,
+    letterSpacing: 0.5,
+  },
   expText: {
     fontSize: 12,
+    fontWeight: '500',
   },
   section: {
     gap: 12,
   },
-  sectionTitle: {
-    fontSize: 18,
+  sectionTag: {
+    fontSize: 11,
     fontWeight: '600',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  completedRow: {
+    alignItems: 'center',
   },
   completedText: {
     fontSize: 16,
@@ -156,6 +242,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 14,
     textAlign: 'center',
+    lineHeight: 22,
   },
   recentList: {
     gap: 12,

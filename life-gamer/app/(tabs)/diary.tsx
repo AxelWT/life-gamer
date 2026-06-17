@@ -21,9 +21,12 @@ export default function DiaryScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {diaries.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Text style={styles.emptyEmoji}>📝</Text>
+          <View style={[styles.emptyIconBg, { backgroundColor: theme.primaryGlow }]}>
+            <Text style={styles.emptyEmoji}>📝</Text>
+          </View>
+          <Text style={[styles.emptyTitle, { color: theme.text }]}>还没有日记</Text>
           <Text style={[styles.emptyText, { color: theme.textSecondary }]}>
-            还没有日记，点击右下角按钮开始写吧
+            点击右下角按钮，开始记录你的生活
           </Text>
         </View>
       ) : (
@@ -38,6 +41,7 @@ export default function DiaryScreen() {
         />
       )}
 
+      {/* FAB */}
       <TouchableOpacity
         style={[styles.fab, { backgroundColor: theme.primary }]}
         onPress={() => router.push('/diary/write')}
@@ -54,7 +58,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    padding: 20,
+    padding: 24,
     paddingBottom: 100,
   },
   separator: {
@@ -65,33 +69,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 40,
+    gap: 12,
+  },
+  emptyIconBg: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
   emptyEmoji: {
-    fontSize: 48,
-    marginBottom: 16,
+    fontSize: 36,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 15,
     textAlign: 'center',
+    lineHeight: 22,
   },
   fab: {
     position: 'absolute',
     right: 24,
     bottom: 24,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 60,
+    height: 60,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowColor: '#00D4AA',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 8,
   },
   fabText: {
     fontSize: 28,
-    color: '#FFFFFF',
-    fontWeight: '600',
+    color: '#0A0A0F',
+    fontWeight: '700',
   },
 });

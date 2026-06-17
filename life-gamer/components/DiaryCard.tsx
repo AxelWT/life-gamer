@@ -25,35 +25,46 @@ export default function DiaryCard({ diary, onPress }: DiaryCardProps) {
         {
           backgroundColor: theme.surface,
           borderColor: theme.border,
-          borderLeftColor: moodDef?.color ?? theme.border,
         },
       ]}
       activeOpacity={0.7}
     >
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
-          {diary.title || '无标题'}
-        </Text>
-        <View style={styles.headerRight}>
-          {diary.isFavorite && <Text style={styles.star}>⭐</Text>}
-          <Text style={styles.moodEmoji}>{moodDef?.emoji}</Text>
+      <View style={[styles.moodAccent, { backgroundColor: moodDef?.color ?? theme.primary }]} />
+      <View style={styles.body}>
+        <View style={styles.header}>
+          <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+            {diary.title || '无标题'}
+          </Text>
+          <View style={styles.headerRight}>
+            {diary.isFavorite && <Text style={styles.star}>⭐</Text>}
+            <View style={[styles.moodBadge, { backgroundColor: (moodDef?.color ?? theme.primary) + '20' }]}>
+              <Text style={styles.moodEmoji}>{moodDef?.emoji}</Text>
+            </View>
+          </View>
         </View>
+        <Text style={[styles.content, { color: theme.textSecondary }]} numberOfLines={2}>
+          {diary.content}
+        </Text>
+        <Text style={[styles.date, { color: theme.textMuted }]}>{dateStr}</Text>
       </View>
-      <Text style={[styles.content, { color: theme.textSecondary }]} numberOfLines={2}>
-        {diary.content}
-      </Text>
-      <Text style={[styles.date, { color: theme.textSecondary }]}>{dateStr}</Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 18,
     borderWidth: 1,
-    borderLeftWidth: 4,
-    gap: 8,
+    flexDirection: 'row',
+    overflow: 'hidden',
+  },
+  moodAccent: {
+    width: 4,
+  },
+  body: {
+    flex: 1,
+    padding: 18,
+    gap: 10,
   },
   header: {
     flexDirection: 'row',
@@ -64,23 +75,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     flex: 1,
+    letterSpacing: 0.2,
   },
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
   },
   star: {
     fontSize: 14,
   },
+  moodBadge: {
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
   moodEmoji: {
-    fontSize: 20,
+    fontSize: 18,
   },
   content: {
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 22,
   },
   date: {
     fontSize: 12,
+    letterSpacing: 0.5,
   },
 });

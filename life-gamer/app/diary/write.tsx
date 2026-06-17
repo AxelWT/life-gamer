@@ -72,29 +72,36 @@ export default function WriteDiaryScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       flex={1}
     >
+      {/* Header */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={[styles.headerBtn, { color: theme.textSecondary }]}>取消</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
+          <Text style={[styles.cancelText, { color: theme.textSecondary }]}>取消</Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: theme.text }]}>写日记</Text>
-        <TouchableOpacity onPress={handleSave} disabled={saving}>
-          <Text style={[styles.headerBtn, { color: theme.primary }]}>
+        <View style={styles.headerCenter}>
+          <Text style={[styles.headerTitle, { color: theme.text }]}>写日记</Text>
+          <Text style={[styles.headerSub, { color: theme.textMuted }]}>记录今天</Text>
+        </View>
+        <TouchableOpacity onPress={handleSave} disabled={saving} style={styles.headerBtn}>
+          <Text style={[styles.saveText, { color: theme.primary }]}>
             {saving ? '保存中...' : '保存'}
           </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
+        {/* Mood Selector */}
         <Card>
           <MoodSelector selected={mood} onSelect={setMood} />
         </Card>
 
+        {/* Title Input */}
         <Input
           value={title}
           onChangeText={setTitle}
           placeholder="标题（可选）"
         />
 
+        {/* Content Input */}
         <Input
           value={content}
           onChangeText={setContent}
@@ -120,18 +127,35 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   headerBtn: {
-    fontSize: 16,
-    fontWeight: '600',
+    minWidth: 60,
+  },
+  headerCenter: {
+    alignItems: 'center',
+    gap: 2,
   },
   headerTitle: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  headerSub: {
+    fontSize: 12,
+    letterSpacing: 0.5,
+  },
+  cancelText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  saveText: {
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'right',
   },
   body: {
     flex: 1,
   },
   bodyContent: {
-    padding: 20,
+    padding: 24,
     gap: 16,
   },
 });

@@ -1,40 +1,68 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, useColorScheme } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, useColorScheme, Alert } from 'react-native';
 import { useGameStore } from '../../stores/gameStore';
 import { useDiaryStore } from '../../stores/diaryStore';
 import { Colors } from '../../constants/colors';
 import { ACHIEVEMENTS } from '../../constants/achievements';
 import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import { exportDiaries } from '../../utils/exportDiary';
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const profile = useGameStore((s) => s.profile);
   const diaries = useDiaryStore((s) => s.diaries);
+  const [exporting, setExporting] = useState(false);
 
   const totalWords = diaries.reduce((sum, d) => sum + d.content.length, 0);
   const expProgress = profile ? profile.exp / profile.expToNextLevel : 0;
+
+  const handleExport = async () => {
+    if (diaries.length === 0) {
+      Alert.alert('提示', '还没有日记可以导出');
+      return;
+    }
+    setExporting(true);
+    try {
+      const success = await exportDiaries(diaries);
+      if (!success) {
+        Alert.alert('提示', '当前设备不支持分享功能');
+      }
+    } catch (error) {
+      Alert.alert('错误', '导出失败，请重试');
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.content}
     >
+      {/* Profile Card */}
       {profile && (
-        <Card style={styles.profileCard}>
+        <Card glowing style={styles.profileCard}>
+          <View style={[styles.avatarBg, { backgroundColor: theme.primaryGlow }]}>
+            <Text style={styles.avatarEmoji}>🎮</Text>
+          </View>
           <Text style={[styles.levelText, { color: theme.primary }]}>
             Lv.{profile.level}
           </Text>
           <Text style={[styles.titleText, { color: theme.text }]}>{profile.title}</Text>
-          <View style={[styles.progressBarBg, { backgroundColor: theme.border }]}>
+          <View style={[styles.progressBarBg, { backgroundColor: theme.surfaceElevated }]}>
             <View
               style={[styles.progressBar, { backgroundColor: theme.primary, width: `${expProgress * 100}%` }]}
             />
           </View>
-          <Text style={[styles.expText, { color: theme.textSecondary }]}>
-            {profile.exp} / {profile.expToNextLevel} EXP
-          </Text>
-          <View style={styles.streakRow}>
+          <View style={styles.expRow}>
+            <Text style={[styles.expLabel, { color: theme.textMuted }]}>经验值</Text>
+            <Text style={[styles.expText, { color: theme.textSecondary }]}>
+              {profile.exp} / {profile.expToNextLevel}
+            </Text>
+          </View>
+          <View style={[styles.streakBadge, { backgroundColor: theme.primaryGlow }]}>
             <Text style={[styles.streakText, { color: theme.primary }]}>
               🔥 连续{profile.streakDays}天
             </Text>
@@ -42,7 +70,9 @@ export default function ProfileScreen() {
         </Card>
       )}
 
+      {/* Stats Section */}
       <View style={styles.section}>
+        <Text style={[styles.sectionTag, { color: theme.accent }]}>STATS</Text>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>统计</Text>
         <View style={styles.statsGrid}>
           <Card style={styles.statBox}>
@@ -56,21 +86,60 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {/* Tools Section */}
       <View style={styles.section}>
+        <Text style={[styles.sectionTag, { color: theme.accent }]}>TOOLS</Text>
+        <Text style={[styles.sectionTitle, { color: theme.text }]}>工具</Text>
+        <Card style={styles.toolCard}>
+          <View style={styles.toolHeader}>
+            <View style={[styles.toolIconBg, { backgroundColor: theme.primaryGlow }]}>
+              <Text style={styles.toolIcon}>📄</Text>
+            </View>
+            <View style={styles.toolInfo}>
+              <Text style={[styles.toolTitle, { color: theme.text }]}>导出日记</Text>
+              <Text style={[styles.toolDesc, { color: theme.textSecondary }]}>
+                将 {diaries.length} 篇日记导出为 TXT 文件
+              </Text>
+            </View>
+          </View>
+          <Button
+            title={exporting ? '导出中...' : '导出全部日记'}
+            onPress={handleExport}
+            disabled={exporting || diaries.length === 0}
+            size="small"
+          />
+        </Card>
+      </View>
+
+      {/* Achievements Section */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTag, { color: theme.accent }]}>ACHIEVEMENTS</Text>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>成就</Text>
         <View style={styles.achievementList}>
           {ACHIEVEMENTS.map((def) => {
             const unlocked = profile?.achievements.find((a) => a.id === def.id)?.isUnlocked;
             return (
-              <Card key={def.id} style={[styles.achievementCard, !unlocked && styles.lockedCard]}>
-                <Text style={styles.achievementIcon}>
-                  {unlocked ? def.icon : '🔒'}
-                </Text>
+              <Card
+                key={def.id}
+                style={[
+                  styles.achievementCard,
+                  !unlocked && styles.lockedCard,
+                  unlocked && { borderColor: theme.primary + '40' },
+                ]}
+              >
+                <View style={[
+                  styles.achievementIconBg,
+                  { backgroundColor: unlocked ? theme.primaryGlow : theme.surfaceElevated },
+                ]}>
+                  <Text style={styles.achievementIcon}>
+                    {unlocked ? def.icon : '🔒'}
+                  </Text>
+                </View>
                 <View style={styles.achievementInfo}>
                   <Text
                     style={[
                       styles.achievementTitle,
-                      { color: unlocked ? theme.text : theme.textSecondary },
+                      { color: unlocked ? theme.text : theme.textMuted },
                     ]}
                   >
                     {def.title}
@@ -93,47 +162,81 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 20,
-    gap: 20,
+    padding: 24,
+    gap: 24,
   },
   profileCard: {
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
+    paddingVertical: 32,
+  },
+  avatarBg: {
+    width: 72,
+    height: 72,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  avatarEmoji: {
+    fontSize: 32,
   },
   levelText: {
-    fontSize: 36,
+    fontSize: 40,
     fontWeight: '800',
+    letterSpacing: -1,
   },
   titleText: {
     fontSize: 20,
     fontWeight: '600',
+    letterSpacing: 0.3,
   },
   progressBarBg: {
-    height: 10,
-    borderRadius: 5,
+    height: 8,
+    borderRadius: 4,
     overflow: 'hidden',
     width: '100%',
   },
   progressBar: {
     height: '100%',
-    borderRadius: 5,
+    borderRadius: 4,
+  },
+  expRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  expLabel: {
+    fontSize: 12,
+    letterSpacing: 0.5,
   },
   expText: {
     fontSize: 12,
+    fontWeight: '500',
   },
-  streakRow: {
+  streakBadge: {
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 14,
     marginTop: 4,
   },
   streakText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   section: {
     gap: 12,
   },
-  sectionTitle: {
-    fontSize: 18,
+  sectionTag: {
+    fontSize: 11,
     fontWeight: '600',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   statsGrid: {
     flexDirection: 'row',
@@ -142,37 +245,73 @@ const styles = StyleSheet.create({
   statBox: {
     flex: 1,
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
+    paddingVertical: 24,
   },
   statValue: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 32,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   statLabel: {
     fontSize: 13,
+    letterSpacing: 0.3,
+  },
+  toolCard: {
+    gap: 16,
+  },
+  toolHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  toolIconBg: {
+    borderRadius: 14,
+    padding: 10,
+  },
+  toolIcon: {
+    fontSize: 24,
+  },
+  toolInfo: {
+    flex: 1,
+    gap: 2,
+  },
+  toolTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: 0.2,
+  },
+  toolDesc: {
+    fontSize: 13,
   },
   achievementList: {
-    gap: 8,
+    gap: 10,
   },
   achievementCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
   },
   lockedCard: {
     opacity: 0.5,
   },
+  achievementIconBg: {
+    borderRadius: 14,
+    padding: 10,
+  },
   achievementIcon: {
-    fontSize: 28,
+    fontSize: 24,
   },
   achievementInfo: {
     flex: 1,
   },
   achievementTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
+    letterSpacing: 0.2,
   },
   achievementDesc: {
     fontSize: 13,
+    marginTop: 2,
   },
 });

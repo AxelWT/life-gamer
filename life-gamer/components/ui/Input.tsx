@@ -27,14 +27,14 @@ export default function Input({
       value={value}
       onChangeText={onChangeText}
       placeholder={placeholder}
-      placeholderTextColor={theme.textSecondary}
+      placeholderTextColor={theme.textMuted}
       multiline={multiline}
       maxLength={maxLength}
       style={[
         styles.input,
         {
           color: theme.text,
-          backgroundColor: theme.background,
+          backgroundColor: theme.surface,
           borderColor: theme.border,
         },
         multiline && styles.multiline,
@@ -47,14 +47,15 @@ export default function Input({
 const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    borderRadius: 14,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
     fontSize: 16,
+    letterSpacing: 0.2,
   },
   multiline: {
-    minHeight: 120,
+    minHeight: 140,
     textAlignVertical: 'top',
-    paddingTop: 12,
+    paddingTop: 14,
   },
 });

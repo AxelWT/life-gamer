@@ -1,10 +1,18 @@
-import * as SQLite from 'expo-sqlite';
+import { Platform } from 'react-native';
+import { createWebDatabase, isWeb } from './webDb';
 
-let db: SQLite.SQLiteDatabase | null = null;
+type Database = any;
 
-export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
+let db: Database | null = null;
+
+export async function getDatabase(): Promise<Database> {
   if (!db) {
-    db = await SQLite.openDatabaseAsync('lifegamer.db');
+    if (isWeb()) {
+      db = createWebDatabase();
+    } else {
+      const SQLite = require('expo-sqlite');
+      db = await SQLite.openDatabaseAsync('lifegamer.db');
+    }
     await initializeTables(db);
   }
   return db;

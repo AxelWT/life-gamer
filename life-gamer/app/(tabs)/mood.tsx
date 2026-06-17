@@ -3,7 +3,7 @@ import { View, Text, ScrollView, StyleSheet, useColorScheme } from 'react-native
 import { useDiaryStore } from '../../stores/diaryStore';
 import { Colors } from '../../constants/colors';
 import { MOODS } from '../../constants/moods';
-import { MoodType, MoodStat } from '../../types';
+import { MoodStat } from '../../types';
 import Card from '../../components/ui/Card';
 import MoodCalendar from '../../components/MoodCalendar';
 
@@ -44,6 +44,7 @@ export default function MoodScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.content}
     >
+      {/* Calendar Card */}
       <Card>
         <MoodCalendar
           diaries={diaries}
@@ -53,7 +54,9 @@ export default function MoodScreen() {
         />
       </Card>
 
+      {/* Stats Section */}
       <View style={styles.section}>
+        <Text style={[styles.sectionTag, { color: theme.accent }]}>ANALYTICS</Text>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>本月心情统计</Text>
 
         {monthDiaries.length === 0 ? (
@@ -64,25 +67,29 @@ export default function MoodScreen() {
           </Card>
         ) : (
           <>
+            {/* Top Mood Card */}
             {topMood && (
-              <Card style={styles.topMoodCard}>
-                <Text style={[styles.topMoodLabel, { color: theme.textSecondary }]}>
+              <Card glowing style={styles.topMoodCard}>
+                <Text style={[styles.topMoodLabel, { color: theme.textMuted }]}>
                   最多的心情
                 </Text>
                 <View style={styles.topMoodRow}>
                   <Text style={styles.topMoodEmoji}>
                     {MOODS.find((m) => m.key === topMood.mood)?.emoji}
                   </Text>
-                  <Text style={[styles.topMoodName, { color: theme.text }]}>
-                    {MOODS.find((m) => m.key === topMood.mood)?.label}
-                  </Text>
-                  <Text style={[styles.topMoodCount, { color: theme.textSecondary }]}>
-                    {topMood.count}次
-                  </Text>
+                  <View style={styles.topMoodInfo}>
+                    <Text style={[styles.topMoodName, { color: theme.text }]}>
+                      {MOODS.find((m) => m.key === topMood.mood)?.label}
+                    </Text>
+                    <Text style={[styles.topMoodCount, { color: theme.textSecondary }]}>
+                      {topMood.count}次 · {Math.round(topMood.percentage)}%
+                    </Text>
+                  </View>
                 </View>
               </Card>
             )}
 
+            {/* Mood Stats */}
             <View style={styles.statsContainer}>
               {moodStats.map((stat) => {
                 const moodDef = MOODS.find((m) => m.key === stat.mood);
@@ -90,13 +97,15 @@ export default function MoodScreen() {
                 return (
                   <Card key={stat.mood} style={styles.statCard}>
                     <View style={styles.statHeader}>
-                      <Text style={styles.statEmoji}>{moodDef.emoji}</Text>
+                      <View style={[styles.statEmojiBg, { backgroundColor: moodDef.color + '18' }]}>
+                        <Text style={styles.statEmoji}>{moodDef.emoji}</Text>
+                      </View>
                       <Text style={[styles.statLabel, { color: theme.text }]}>{moodDef.label}</Text>
                       <Text style={[styles.statCount, { color: theme.textSecondary }]}>
                         {stat.count}次
                       </Text>
                     </View>
-                    <View style={[styles.statBarBg, { backgroundColor: theme.border }]}>
+                    <View style={[styles.statBarBg, { backgroundColor: theme.surfaceElevated }]}>
                       <View
                         style={[
                           styles.statBar,
@@ -120,15 +129,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 20,
-    gap: 20,
+    padding: 24,
+    gap: 24,
   },
   section: {
     gap: 12,
   },
-  sectionTitle: {
-    fontSize: 18,
+  sectionTag: {
+    fontSize: 11,
     fontWeight: '600',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   emptyText: {
     fontSize: 14,
@@ -136,47 +152,59 @@ const styles = StyleSheet.create({
   },
   topMoodCard: {
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
+    paddingVertical: 28,
   },
   topMoodLabel: {
-    fontSize: 14,
+    fontSize: 13,
+    letterSpacing: 0.5,
   },
   topMoodRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
   },
   topMoodEmoji: {
-    fontSize: 32,
+    fontSize: 40,
+  },
+  topMoodInfo: {
+    gap: 2,
   },
   topMoodName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
+    letterSpacing: 0.3,
   },
   topMoodCount: {
     fontSize: 14,
   },
   statsContainer: {
-    gap: 8,
+    gap: 10,
   },
   statCard: {
-    gap: 8,
+    gap: 12,
   },
   statHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
+  },
+  statEmojiBg: {
+    borderRadius: 10,
+    padding: 6,
   },
   statEmoji: {
     fontSize: 20,
   },
   statLabel: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '500',
     flex: 1,
+    letterSpacing: 0.2,
   },
   statCount: {
-    fontSize: 13,
+    fontSize: 14,
+    fontWeight: '500',
   },
   statBarBg: {
     height: 6,
