@@ -121,6 +121,103 @@ npm run android
 npm run web
 ```
 
+## 📦 构建打包
+
+### 方式一：EAS Build（推荐）
+
+使用 Expo 官方的 EAS Build 云端构建服务：
+
+```bash
+# 1. 安装 EAS CLI
+npm install -g eas-cli
+
+# 2. 登录 Expo 账号
+eas login
+
+# 3. 配置 EAS Build（首次需要）
+eas build:configure
+
+# 4. 构建 Android APK
+eas build --platform android --profile preview
+
+# 5. 构建 Android AAB（用于上架 Google Play）
+eas build --platform android --profile production
+
+# 6. 构建 iOS（需要 Apple 开发者账号）
+eas build --platform ios
+```
+
+**EAS 配置文件 `eas.json` 示例：**
+
+```json
+{
+  "cli": {
+    "version": ">= 5.0.0"
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  }
+}
+```
+
+### 方式二：本地构建 APK
+
+使用 Expo 本地构建（需要安装 Android Studio 和 JDK）：
+
+```bash
+# 1. 生成 Android 原生项目
+npx expo prebuild --platform android
+
+# 2. 进入 android 目录
+cd android
+
+# 3. 构建 Debug APK
+./gradlew assembleDebug
+
+# 4. 构建 Release APK
+./gradlew assembleRelease
+
+# 5. APK 文件位置
+# Debug: android/app/build/outputs/apk/debug/app-debug.apk
+# Release: android/app/build/outputs/apk/release/app-release.apk
+```
+
+### 方式三：Expo Classic Build（已弃用）
+
+```bash
+# 构建 APK（需要 Expo 账号）
+expo build:android -t apk
+
+# 构建 AAB
+expo build:android -t app-bundle
+```
+
+### 构建产物说明
+
+| 格式 | 用途 | 命令 |
+|------|------|------|
+| `.apk` | 直接安装到手机 | `eas build --profile preview` |
+| `.aab` | 上架 Google Play | `eas build --profile production` |
+| `.ipa` | 上架 App Store | `eas build --platform ios` |
+
+### 安装 APK 到手机
+
+```bash
+# 使用 ADB 安装（需要连接手机并开启 USB 调试）
+adb install path/to/app.apk
+
+# 或者直接将 APK 文件传输到手机安装
+```
+
 ## 📱 应用截图
 
 ### 首页
