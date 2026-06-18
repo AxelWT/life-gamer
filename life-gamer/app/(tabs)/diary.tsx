@@ -14,7 +14,7 @@ export default function DiaryScreen() {
   const loadDiaries = useDiaryStore((s) => s.loadDiaries);
 
   const renderItem = ({ item }: { item: Diary }) => (
-    <DiaryCard diary={item} onPress={() => {}} />
+    <DiaryCard diary={item} onPress={() => router.push(`/diary/${item.id}`)} />
   );
 
   return (

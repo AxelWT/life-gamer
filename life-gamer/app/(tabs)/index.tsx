@@ -119,7 +119,7 @@ export default function HomeScreen() {
               <DiaryCard
                 key={diary.id}
                 diary={diary}
-                onPress={() => {}}
+                onPress={() => router.push(`/diary/${diary.id}`)}
               />
             ))}
           </View>
