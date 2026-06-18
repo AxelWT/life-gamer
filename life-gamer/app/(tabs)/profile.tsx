@@ -6,14 +6,17 @@ import { Colors } from '../../constants/colors';
 import { ACHIEVEMENTS } from '../../constants/achievements';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
-import { exportDiaries } from '../../utils/exportDiary';
+import { exportDiaries, exportDiariesAsJson } from '../../utils/exportDiary';
+import { importDiariesFromFile, mergeImportedDiaries } from '../../utils/importDiary';
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const profile = useGameStore((s) => s.profile);
   const diaries = useDiaryStore((s) => s.diaries);
+  const addDiary = useDiaryStore((s) => s.addDiary);
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const totalWords = diaries.reduce((sum, d) => sum + d.content.length, 0);
   const expProgress = profile ? profile.exp / profile.expToNextLevel : 0;
@@ -33,6 +36,72 @@ export default function ProfileScreen() {
       Alert.alert('错误', '导出失败，请重试');
     } finally {
       setExporting(false);
+    }
+  };
+
+  const handleExportJson = async () => {
+    if (diaries.length === 0) {
+      Alert.alert('提示', '还没有日记可以导出');
+      return;
+    }
+    setExporting(true);
+    try {
+      const success = await exportDiariesAsJson(diaries);
+      if (!success) {
+        Alert.alert('提示', '当前设备不支持分享功能');
+      }
+    } catch (error) {
+      Alert.alert('错误', '导出失败，请重试');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleImport = async () => {
+    setImporting(true);
+    try {
+      const importedDiaries = await importDiariesFromFile();
+
+      if (!importedDiaries) {
+        setImporting(false);
+        return;
+      }
+
+      const { newDiaries, duplicateCount } = mergeImportedDiaries(diaries, importedDiaries);
+
+      if (newDiaries.length === 0) {
+        Alert.alert('提示', `所有 ${duplicateCount} 篇日记都已存在，无需导入`);
+        setImporting(false);
+        return;
+      }
+
+      // 确认导入
+      Alert.alert(
+        '确认导入',
+        `找到 ${importedDiaries.length} 篇日记，其中 ${newDiaries.length} 篇为新日记${duplicateCount > 0 ? `，${duplicateCount} 篇已存在` : ''}。是否导入？`,
+        [
+          { text: '取消', style: 'cancel' },
+          {
+            text: '导入',
+            onPress: async () => {
+              try {
+                // 批量导入新日记
+                for (const diary of newDiaries) {
+                  await addDiary(diary.title, diary.content, diary.mood, diary.tags, diary.images);
+                }
+                Alert.alert('成功', `成功导入 ${newDiaries.length} 篇日记`);
+              } catch (error) {
+                Alert.alert('错误', '导入失败，请重试');
+              } finally {
+                setImporting(false);
+              }
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      Alert.alert('错误', error instanceof Error ? error.message : '导入失败，请重试');
+      setImporting(false);
     }
   };
 
@@ -90,21 +159,66 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <Text style={[styles.sectionTag, { color: theme.accent }]}>TOOLS</Text>
         <Text style={[styles.sectionTitle, { color: theme.text }]}>工具</Text>
+
+        {/* Import Card */}
+        <Card style={styles.toolCard}>
+          <View style={styles.toolHeader}>
+            <View style={[styles.toolIconBg, { backgroundColor: theme.primaryGlow }]}>
+              <Text style={styles.toolIcon}>📥</Text>
+            </View>
+            <View style={styles.toolInfo}>
+              <Text style={[styles.toolTitle, { color: theme.text }]}>导入日记</Text>
+              <Text style={[styles.toolDesc, { color: theme.textSecondary }]}>
+                从 JSON 文件导入日记
+              </Text>
+            </View>
+          </View>
+          <Button
+            title={importing ? '导入中...' : '导入日记'}
+            onPress={handleImport}
+            disabled={importing}
+            size="small"
+            variant="secondary"
+          />
+        </Card>
+
+        {/* Export TXT Card */}
         <Card style={styles.toolCard}>
           <View style={styles.toolHeader}>
             <View style={[styles.toolIconBg, { backgroundColor: theme.primaryGlow }]}>
               <Text style={styles.toolIcon}>📄</Text>
             </View>
             <View style={styles.toolInfo}>
-              <Text style={[styles.toolTitle, { color: theme.text }]}>导出日记</Text>
+              <Text style={[styles.toolTitle, { color: theme.text }]}>导出日记 (TXT)</Text>
               <Text style={[styles.toolDesc, { color: theme.textSecondary }]}>
                 将 {diaries.length} 篇日记导出为 TXT 文件
               </Text>
             </View>
           </View>
           <Button
-            title={exporting ? '导出中...' : '导出全部日记'}
+            title={exporting ? '导出中...' : '导出 TXT'}
             onPress={handleExport}
+            disabled={exporting || diaries.length === 0}
+            size="small"
+          />
+        </Card>
+
+        {/* Export JSON Card */}
+        <Card style={styles.toolCard}>
+          <View style={styles.toolHeader}>
+            <View style={[styles.toolIconBg, { backgroundColor: theme.primaryGlow }]}>
+              <Text style={styles.toolIcon}>📋</Text>
+            </View>
+            <View style={styles.toolInfo}>
+              <Text style={[styles.toolTitle, { color: theme.text }]}>导出日记 (JSON)</Text>
+              <Text style={[styles.toolDesc, { color: theme.textSecondary }]}>
+                将 {diaries.length} 篇日记导出为 JSON 文件（可用于导入）
+              </Text>
+            </View>
+          </View>
+          <Button
+            title={exporting ? '导出中...' : '导出 JSON'}
+            onPress={handleExportJson}
             disabled={exporting || diaries.length === 0}
             size="small"
           />

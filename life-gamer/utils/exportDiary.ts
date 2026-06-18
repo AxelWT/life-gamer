@@ -2,6 +2,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { Diary } from '../types';
 import { MOODS } from '../constants/moods';
+import { generateExportJson } from './importDiary';
 
 function formatDate(timestamp: number): string {
   const d = new Date(timestamp);
@@ -122,6 +123,30 @@ export async function exportDiaries(diaries: Diary[]): Promise<boolean> {
     await Sharing.shareAsync(filePath, {
       mimeType: 'text/plain',
       dialogTitle: '导出日记',
+    });
+    return true;
+  }
+
+  return false;
+}
+
+export async function exportDiariesAsJson(diaries: Diary[]): Promise<boolean> {
+  if (diaries.length === 0) return false;
+
+  const json = generateExportJson(diaries);
+  const dateStr = formatDate(Date.now()).replace(/-/g, '');
+  const fileName = `LifeGamer_日记_${dateStr}.json`;
+  const filePath = `${FileSystem.cacheDirectory}${fileName}`;
+
+  await FileSystem.writeAsStringAsync(filePath, json, {
+    encoding: FileSystem.EncodingType.UTF8,
+  });
+
+  const canShare = await Sharing.isAvailableAsync();
+  if (canShare) {
+    await Sharing.shareAsync(filePath, {
+      mimeType: 'application/json',
+      dialogTitle: '导出日记 (JSON)',
     });
     return true;
   }
