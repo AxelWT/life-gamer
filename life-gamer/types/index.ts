@@ -36,3 +36,12 @@ export interface MoodStat {
   count: number;
   percentage: number;
 }
+
+export interface Todo {
+  id: string;
+  date: string;        // "2026-06-17"
+  content: string;     // 待办内容
+  isCompleted: boolean; // 是否完成
+  createdAt: number;   // 创建时间
+  updatedAt: number;   // 更新时间
+}

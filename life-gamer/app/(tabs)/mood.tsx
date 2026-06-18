@@ -1,17 +1,57 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, useColorScheme } from 'react-native';
 import { useDiaryStore } from '../../stores/diaryStore';
+import { useTodoStore } from '../../stores/todoStore';
 import { Colors } from '../../constants/colors';
 import { MOODS } from '../../constants/moods';
 import { MoodStat } from '../../types';
 import Card from '../../components/ui/Card';
 import MoodCalendar from '../../components/MoodCalendar';
+import TodoList from '../../components/TodoList';
 
 export default function MoodScreen() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const diaries = useDiaryStore((s) => s.diaries);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+
+  // TODO 相关状态
+  const {
+    todos,
+    selectedDate,
+    datesWithTodos,
+    isLoading: isTodoLoading,
+    initTodoTable,
+    setSelectedDate,
+    loadTodosByDate,
+    loadDatesWithTodos,
+    addTodo,
+    updateTodo,
+    deleteTodo,
+    toggleTodo,
+  } = useTodoStore();
+
+  // 初始化 TODO 表
+  useEffect(() => {
+    initTodoTable();
+  }, []);
+
+  // 加载当月的 TODO 标记
+  useEffect(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth() + 1;
+    loadDatesWithTodos(year, month);
+  }, [currentMonth]);
+
+  // 加载选中日期的 TODO
+  useEffect(() => {
+    loadTodosByDate(selectedDate);
+  }, [selectedDate]);
+
+  // 处理日期点击
+  const handleDayPress = (date: string) => {
+    setSelectedDate(date);
+  };
 
   const monthDiaries = useMemo(() => {
     const year = currentMonth.getFullYear();
@@ -50,9 +90,27 @@ export default function MoodScreen() {
           diaries={diaries}
           currentMonth={currentMonth}
           onMonthChange={setCurrentMonth}
-          onDayPress={() => {}}
+          onDayPress={handleDayPress}
+          selectedDate={selectedDate}
+          datesWithTodos={datesWithTodos}
         />
       </Card>
+
+      {/* Todo Section */}
+      <View style={styles.section}>
+        <Text style={[styles.sectionTag, { color: theme.accent }]}>TODO</Text>
+        <Card>
+          <TodoList
+            date={selectedDate}
+            todos={todos}
+            isLoading={isTodoLoading}
+            onAddTodo={addTodo}
+            onToggleTodo={toggleTodo}
+            onDeleteTodo={deleteTodo}
+            onEditTodo={(id, content) => updateTodo(id, { content })}
+          />
+        </Card>
+      </View>
 
       {/* Stats Section */}
       <View style={styles.section}>

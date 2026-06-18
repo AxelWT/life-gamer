@@ -9,6 +9,8 @@ interface MoodCalendarProps {
   currentMonth: Date;
   onMonthChange: (date: Date) => void;
   onDayPress: (date: string) => void;
+  selectedDate?: string;
+  datesWithTodos?: Set<string>;
 }
 
 const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
@@ -19,6 +21,8 @@ export default function MoodCalendar({
   currentMonth,
   onMonthChange,
   onDayPress,
+  selectedDate,
+  datesWithTodos = new Set(),
 }: MoodCalendarProps) {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
@@ -87,6 +91,8 @@ export default function MoodCalendar({
           const dateStr = `${year}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
           const diary = diaryMap[dateStr];
           const moodDef = diary ? MOODS.find((m) => m.key === diary.mood) : null;
+          const isSelected = selectedDate === dateStr;
+          const hasTodo = datesWithTodos.has(dateStr);
 
           return (
             <TouchableOpacity
@@ -95,7 +101,9 @@ export default function MoodCalendar({
               style={[
                 styles.dayCell,
                 { width: DAY_WIDTH },
-                moodDef && {
+                isSelected && styles.selectedCell,
+                isSelected && { backgroundColor: theme.primary + '30' },
+                moodDef && !isSelected && {
                   backgroundColor: moodDef.color + '18',
                   borderRadius: 10,
                 },
@@ -105,13 +113,26 @@ export default function MoodCalendar({
                 style={[
                   styles.dayText,
                   {
-                    color: moodDef ? moodDef.color : theme.text,
-                    fontWeight: moodDef ? '700' : '400',
+                    color: isSelected
+                      ? theme.primary
+                      : moodDef
+                      ? moodDef.color
+                      : theme.text,
+                    fontWeight: isSelected || moodDef ? '700' : '400',
                   },
                 ]}
               >
                 {day}
               </Text>
+              {/* TODO 标记点 */}
+              {hasTodo && (
+                <View
+                  style={[
+                    styles.todoDot,
+                    { backgroundColor: theme.primary },
+                  ]}
+                />
+              )}
             </TouchableOpacity>
           );
         })}
@@ -163,8 +184,19 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
+  },
+  selectedCell: {
+    borderRadius: 10,
   },
   dayText: {
     fontSize: 15,
+  },
+  todoDot: {
+    position: 'absolute',
+    bottom: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
 });
