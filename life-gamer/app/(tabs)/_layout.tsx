@@ -1,10 +1,15 @@
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/colors';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
+  const insets = useSafeAreaInsets();
+
+  // 动态计算 Tab 栏高度，确保底部安全区域
+  const tabBarHeight = 64 + Math.max(insets.bottom, 12);
 
   return (
     <Tabs
@@ -17,8 +22,8 @@ export default function TabLayout() {
           backgroundColor: theme.surface,
           borderTopColor: theme.border,
           borderTopWidth: 1,
-          height: 64,
-          paddingBottom: 12,
+          height: tabBarHeight,
+          paddingBottom: Math.max(insets.bottom, 12),
           paddingTop: 12,
         },
         tabBarLabelStyle: {

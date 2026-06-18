@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useColorScheme, View, Text, StyleSheet } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useDiaryStore } from '../stores/diaryStore';
 import { useGameStore } from '../stores/gameStore';
 import { getDatabase } from '../database/init';
@@ -35,35 +36,39 @@ export default function RootLayout() {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>应用启动失败</Text>
-        <Text style={styles.errorMessage}>{error}</Text>
-      </View>
+      <SafeAreaProvider>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>应用启动失败</Text>
+          <Text style={styles.errorMessage}>{error}</Text>
+        </View>
+      </SafeAreaProvider>
     );
   }
 
   return (
-    <Stack
-      screenOptions={{
-        contentStyle: { backgroundColor: theme.background },
-      }}
-    >
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="diary/write"
-        options={{
-          presentation: 'modal',
-          title: '写日记',
-          headerStyle: { backgroundColor: theme.surface },
-          headerTintColor: theme.text,
-          headerShadowVisible: false,
-          headerTitleStyle: {
-            fontWeight: '700',
-            letterSpacing: 0.3,
-          },
+    <SafeAreaProvider>
+      <Stack
+        screenOptions={{
+          contentStyle: { backgroundColor: theme.background },
         }}
-      />
-    </Stack>
+      >
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="diary/write"
+          options={{
+            presentation: 'modal',
+            title: '写日记',
+            headerStyle: { backgroundColor: theme.surface },
+            headerTintColor: theme.text,
+            headerShadowVisible: false,
+            headerTitleStyle: {
+              fontWeight: '700',
+              letterSpacing: 0.3,
+            },
+          }}
+        />
+      </Stack>
+    </SafeAreaProvider>
   );
 }
 
