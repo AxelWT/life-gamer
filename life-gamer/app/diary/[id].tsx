@@ -52,15 +52,24 @@ export default function DiaryDetailScreen() {
     );
   };
 
+  const handleEdit = () => {
+    router.push(`/diary/write?id=${diary.id}`);
+  };
+
   return (
     <>
       <Stack.Screen
         options={{
           title: '日记详情',
           headerRight: () => (
-            <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
-              <Text style={[styles.deleteText, { color: '#FF6B6B' }]}>删除</Text>
-            </TouchableOpacity>
+            <View style={styles.headerActions}>
+              <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
+                <Text style={[styles.editText, { color: theme.primary }]}>编辑</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleDelete} style={styles.deleteButton}>
+                <Text style={[styles.deleteText, { color: '#FF6B6B' }]}>删除</Text>
+              </TouchableOpacity>
+            </View>
           ),
         }}
       />
@@ -154,8 +163,21 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
   },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  editButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  editText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
   deleteButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
   },
   deleteText: {
