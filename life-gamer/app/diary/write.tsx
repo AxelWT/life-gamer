@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useDiaryStore } from '../../stores/diaryStore';
 import { useGameStore } from '../../stores/gameStore';
@@ -24,6 +25,7 @@ export default function WriteDiaryScreen() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditing = !!id;
 
@@ -117,7 +119,13 @@ export default function WriteDiaryScreen() {
       flex={1}
     >
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: theme.border }]}>
+      <View style={[
+        styles.header,
+        {
+          borderBottomColor: theme.border,
+          paddingTop: insets.top + 16,
+        },
+      ]}>
         <TouchableOpacity onPress={() => router.back()} style={styles.headerBtn}>
           <Text style={[styles.cancelText, { color: theme.textSecondary }]}>取消</Text>
         </TouchableOpacity>

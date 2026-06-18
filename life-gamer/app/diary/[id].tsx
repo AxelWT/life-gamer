@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, StyleSheet, useColorScheme, TouchableOpacity, Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { useDiaryStore } from '../../stores/diaryStore';
 import { Colors } from '../../constants/colors';
@@ -10,6 +11,7 @@ import Button from '../../components/ui/Button';
 export default function DiaryDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const diaries = useDiaryStore((s) => s.diaries);
@@ -75,7 +77,10 @@ export default function DiaryDetailScreen() {
       />
       <ScrollView
         style={[styles.container, { backgroundColor: theme.background }]}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: insets.bottom + 24 },
+        ]}
       >
         {/* Header Card */}
         <Card glowing style={styles.headerCard}>
