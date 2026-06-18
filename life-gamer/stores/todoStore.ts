@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Todo } from '../types';
 import * as todoQueries from '../database/todoQueries';
+import { scheduleTodoNotification } from '../utils/notifications';
 
 interface TodoState {
   todos: Todo[];
@@ -31,6 +32,9 @@ interface TodoState {
 
   // 切换完成状态
   toggleTodo: (id: string) => Promise<void>;
+
+  // 刷新今日通知
+  refreshTodayNotification: () => Promise<void>;
 }
 
 export const useTodoStore = create<TodoState>((set, get) => ({
@@ -72,6 +76,8 @@ export const useTodoStore = create<TodoState>((set, get) => ({
       todos: [todo, ...state.todos],
       datesWithTodos: new Set([...state.datesWithTodos, date]),
     }));
+    // 刷新今日通知
+    await get().refreshTodayNotification();
     return todo;
   },
 
@@ -105,6 +111,9 @@ export const useTodoStore = create<TodoState>((set, get) => ({
         datesWithTodos: newDatesWithTodos,
       };
     });
+
+    // 刷新今日通知
+    await get().refreshTodayNotification();
   },
 
   toggleTodo: async (id: string) => {
@@ -113,6 +122,18 @@ export const useTodoStore = create<TodoState>((set, get) => ({
       set((state) => ({
         todos: state.todos.map((t) => (t.id === id ? updated : t)),
       }));
+      // 刷新通知（只提醒未完成的）
+      await get().refreshTodayNotification();
+    }
+  },
+
+  refreshTodayNotification: async () => {
+    const today = new Date().toISOString().split('T')[0];
+    const todayTodos = await todoQueries.getTodosByDate(today);
+    const uncompletedTodos = todayTodos.filter((t) => !t.isCompleted);
+
+    if (uncompletedTodos.length > 0) {
+      await scheduleTodoNotification(uncompletedTodos.map((t) => t.content));
     }
   },
 }));

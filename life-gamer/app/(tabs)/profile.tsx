@@ -8,6 +8,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import { exportDiaries, exportDiariesAsJson } from '../../utils/exportDiary';
 import { importDiariesFromFile, mergeImportedDiaries } from '../../utils/importDiary';
+import { sendTestNotification } from '../../utils/notifications';
 
 export default function ProfileScreen() {
   const colorScheme = useColorScheme();
@@ -102,6 +103,15 @@ export default function ProfileScreen() {
     } catch (error) {
       Alert.alert('错误', error instanceof Error ? error.message : '导入失败，请重试');
       setImporting(false);
+    }
+  };
+
+  const handleTestNotification = async () => {
+    try {
+      await sendTestNotification();
+      Alert.alert('提示', '测试通知已发送，请查看通知栏');
+    } catch (error) {
+      Alert.alert('错误', '发送测试通知失败');
     }
   };
 
@@ -221,6 +231,27 @@ export default function ProfileScreen() {
             onPress={handleExportJson}
             disabled={exporting || diaries.length === 0}
             size="small"
+          />
+        </Card>
+
+        {/* Test Notification Card */}
+        <Card style={styles.toolCard}>
+          <View style={styles.toolHeader}>
+            <View style={[styles.toolIconBg, { backgroundColor: theme.primaryGlow }]}>
+              <Text style={styles.toolIcon}>🔔</Text>
+            </View>
+            <View style={styles.toolInfo}>
+              <Text style={[styles.toolTitle, { color: theme.text }]}>测试通知</Text>
+              <Text style={[styles.toolDesc, { color: theme.textSecondary }]}>
+                发送一条测试通知，验证通知功能
+              </Text>
+            </View>
+          </View>
+          <Button
+            title="发送测试通知"
+            onPress={handleTestNotification}
+            size="small"
+            variant="secondary"
           />
         </Card>
       </View>

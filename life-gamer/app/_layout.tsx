@@ -4,14 +4,18 @@ import { useColorScheme, View, Text, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useDiaryStore } from '../stores/diaryStore';
 import { useGameStore } from '../stores/gameStore';
+import { useTodoStore } from '../stores/todoStore';
 import { getDatabase } from '../database/init';
 import { Colors } from '../constants/colors';
+import { requestNotificationPermission } from '../utils/notifications';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
   const loadDiaries = useDiaryStore((s) => s.loadDiaries);
   const loadProfile = useGameStore((s) => s.loadProfile);
+  const initTodoTable = useTodoStore((s) => s.initTodoTable);
+  const refreshTodayNotification = useTodoStore((s) => s.refreshTodayNotification);
   const [error, setError] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -25,6 +29,16 @@ export default function RootLayout() {
         console.log('[LifeGamer] Diaries loaded');
         await loadProfile();
         console.log('[LifeGamer] Profile loaded');
+
+        // 初始化 TODO 表和通知
+        await initTodoTable();
+        console.log('[LifeGamer] Todo table initialized');
+
+        // 请求通知权限并调度今日通知
+        await requestNotificationPermission();
+        await refreshTodayNotification();
+        console.log('[LifeGamer] Notifications scheduled');
+
         setIsReady(true);
       } catch (err) {
         console.error('[LifeGamer] Initialization error:', err);
