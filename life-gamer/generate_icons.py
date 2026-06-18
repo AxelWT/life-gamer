@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-LifeGamer 图标生成器
-深色背景 + 青蓝色 LifeGamer 字样
+LifeGame 图标生成器
+深色背景 + 青蓝色 LifeGame 字样
 """
 
 from PIL import Image, ImageDraw, ImageFont
@@ -11,7 +11,7 @@ BG_COLOR = (10, 10, 18, 255)  # 深色背景
 TEXT_COLOR = (0, 212, 170, 255)  # 青蓝色主题色
 
 def create_icon(size, filename):
-    """创建主图标 - 深色背景 + LifeGamer 字样"""
+    """创建主图标 - 深色背景 + LifeGame 字样"""
     img = Image.new('RGBA', (size, size), BG_COLOR)
     draw = ImageDraw.Draw(img)
 
@@ -34,7 +34,7 @@ def create_icon(size, filename):
     scale = size / 1024
     center_x = size // 2
 
-    # ========== LifeGamer 主文字 ==========
+    # ========== LifeGame 主文字 ==========
     title_font_size = int(180 * scale)
     try:
         title_font = ImageFont.truetype("/System/Library/Fonts/Helvetica Bold.ttf", title_font_size)
@@ -44,7 +44,7 @@ def create_icon(size, filename):
         except:
             title_font = ImageFont.load_default()
 
-    title = "LifeGamer"
+    title = "LifeGame"
     title_bbox = draw.textbbox((0, 0), title, font=title_font)
     title_width = title_bbox[2] - title_bbox[0]
     title_height = title_bbox[3] - title_bbox[1]
@@ -147,7 +147,7 @@ def create_adaptive_icon(size, filename):
         fill=BG_COLOR
     )
 
-    # LifeGamer 文字
+    # LifeGame 文字
     title_font_size = int(160 * scale)
     try:
         title_font = ImageFont.truetype("/System/Library/Fonts/Helvetica Bold.ttf", title_font_size)
@@ -157,7 +157,7 @@ def create_adaptive_icon(size, filename):
         except:
             title_font = ImageFont.load_default()
 
-    title = "LifeGamer"
+    title = "LifeGame"
     title_bbox = draw.textbbox((0, 0), title, font=title_font)
     title_width = title_bbox[2] - title_bbox[0]
     title_height = title_bbox[3] - title_bbox[1]
@@ -236,7 +236,7 @@ def create_splash(size, filename):
     scale = width / 1284
     center_x = width // 2
 
-    # LifeGamer 主文字
+    # LifeGame 主文字
     title_font_size = int(120 * scale)
     try:
         title_font = ImageFont.truetype("/System/Library/Fonts/Helvetica Bold.ttf", title_font_size)
@@ -246,7 +246,7 @@ def create_splash(size, filename):
         except:
             title_font = ImageFont.load_default()
 
-    title = "LifeGamer"
+    title = "LifeGame"
     title_bbox = draw.textbbox((0, 0), title, font=title_font)
     title_width = title_bbox[2] - title_bbox[0]
     title_height = title_bbox[3] - title_bbox[1]
@@ -304,7 +304,7 @@ def create_splash(size, filename):
 
 def main():
     """主函数"""
-    print("🎮 LifeGamer 图标生成器")
+    print("🎮 LifeGame 图标生成器")
     print("=" * 50)
     print(f"背景颜色: 深色 RGB{BG_COLOR[:3]}")
     print(f"文字颜色: 青蓝色 RGB{TEXT_COLOR[:3]}")
