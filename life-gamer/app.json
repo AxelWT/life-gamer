@@ -12,7 +12,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.lifegamer.app",
       "infoPlist": {
-        "UIBackgroundModes": ["fetch", "remote-notification"]
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -35,7 +38,8 @@
           "icon": "./assets/icon.png",
           "color": "#00D4AA"
         }
-      ]
+      ],
+      "expo-sqlite"
     ]
   }
 }
